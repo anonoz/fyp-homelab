@@ -1,0 +1,15 @@
+[rpi-fedora]
+rpi3-alpha
+rpi4-alpha
+rpi4-delta
+
+[reverseproxy]
+rpi3-alpha
+
+[kubeapiserver]
+rpi4-alpha
+
+[db]
+rpi4-delta
+
+
