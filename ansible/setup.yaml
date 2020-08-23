@@ -1,0 +1,42 @@
+---
+- hosts: rpifedora
+  remote_user: root
+  tasks:
+  - name: Set hostnames
+    hostname:
+      name: "{{ inventory_hostname }}"
+  - name: Add user 'anonoz'
+    user:
+      name: anonoz
+  - name: Make anonoz sudoer
+    template:
+      src: rpifedora/files/sudoers.j2
+      dest: /etc/sudoers.d/sudoers
+      validate: 'visudo -cf %s'
+      mode: 0440
+  - name: SSH keys for anonoz
+    authorized_key:
+      user: anonoz
+      state: present
+      key: "{{ lookup('file', 'rpifedora/files/authorized_keys') }}"
+  - name: Configure sshd
+    copy:
+      src: rpifedora/files/sshd_config
+      dest: /etc/ssh/sshd_config
+      mode: '0644'
+      backup: yes
+  - name: Uninstall zram swap
+    dnf:
+      name: zram
+      state: absent
+  - name: Install packages we need
+    dnf:
+      name:
+        - vim
+        - rsync
+        - htop
+        - lm_sensors
+      state: present
+  handlers:
+  - name: restart sshd
+    service: name=sshd state=restarted

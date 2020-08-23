@@ -1,0 +1,101 @@
+---
+- hosts: rpifedora
+  remote_user: root
+  tasks:
+  - name: Copy /etc/sysctl.d/k8s.conf
+    copy:
+      src: rpifedora/files/etc/sysctl.d/k8s.conf
+      dest: /etc/sysctl.d/k8s.conf
+      mode: 666
+    notify:
+      - reload sysctl
+  - name: Copy /etc/yum.repos.d/kubernetes.repo
+    template:
+      src: rpifedora/files/etc/yum.repos.d/kubernetes.repo.j2
+      dest: /etc/yum.repos.d/kubernetes.repo
+      mode: 0600
+      backup: yes
+  - name: Put SELinux in permissive mode, logging actions that would be blocked.
+    selinux:
+      policy: targeted
+      state: permissive
+  - name: Install docker
+    dnf:
+      name:
+        - moby-engine
+        - docker-compose
+      state: latest
+  - name: Install kubernetes
+    dnf:
+      name:
+        - kubernetes-cni
+        - kubelet
+        - kubeadm
+        - kubectl
+      disable_excludes: kubernetes
+      state: present
+  - name: systemctl enable docker
+    systemd:
+      name: docker
+      enabled: yes
+      state: started
+  - name: systemctl enable kubelet
+    systemd:
+      name: kubelet
+      enabled: yes
+      state: started
+  - name: Create docker group
+    group:
+      name: docker
+  - name: Add anonoz to docker group
+    user:
+      name: anonoz
+      groups: docker
+      append: yes
+  - firewalld:
+      zone: trusted
+      interface: docker0
+      permanent: yes
+      state: enabled
+  - firewalld:
+      masquerade: yes
+      state: enabled
+      permanent: yes
+      zone: FedoraWorkstation
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 6443/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 2379-2380/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 10250/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 10251/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 10252/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 10255/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 8472/udp
+  - firewalld:
+      masquerade: yes
+      state: enabled
+      permanent: yes
+      zone: dmz
+  handlers:
+  - name: reload sysctl
+    sysctl:
+      reload: yes

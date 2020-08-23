@@ -1,15 +1,9 @@
-[rpi-fedora]
+rpi3-alpha ansible_host=192.168.0.203
+rpi4-alpha ansible_host=192.168.0.204
+rpi4-delta ansible_host=192.168.0.205
+
+[rpifedora]
 rpi3-alpha
 rpi4-alpha
 rpi4-delta
-
-[reverseproxy]
-rpi3-alpha
-
-[kubeapiserver]
-rpi4-alpha
-
-[db]
-rpi4-delta
-
 
