@@ -36,6 +36,8 @@
         - rsync
         - htop
         - lm_sensors
+        - git
+        - wget
       state: present
   handlers:
   - name: restart sshd
