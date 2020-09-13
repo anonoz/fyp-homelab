@@ -7,3 +7,8 @@ rpi3-alpha
 rpi4-alpha
 rpi4-delta
 
+[dbserver]
+rpi4-delta
+
+[httpserver]
+rpi3-alpha

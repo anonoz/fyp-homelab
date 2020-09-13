@@ -1,0 +1,62 @@
+---
+- hosts: dbserver
+  remote_user: root
+  tasks:
+  - name: Install packages we need
+    dnf:
+      name:
+        - nfs-utils
+        - portmap
+      state: present
+  - systemd:
+      name: nfs-server
+      enabled: yes
+      state: started
+  - name: Create directory for nfs
+    file: path=/mnt/nfs_shares/docs state=directory mode=777 owner=nobody group=nobody
+    register: nfs_dir_creation
+  - name: Restart nfs-utils
+    systemd:
+      name: nfs-utils
+      state: restarted
+    when: nfs_dir_creation.changed
+  - name: Write /etc/exports for nfs server
+    template:
+      src: files/nfs/etc/exports.j2
+      dest: /etc/exports
+      mode: 600
+      backup: yes
+    register: write_exports
+  - name: Export from changed /etc/exports
+    shell: exportfs -arv
+    when: write_exports.changed
+  - firewalld:
+      service: nfs
+      state: enabled
+      permanent: yes
+    notify: reload firewalld
+  - firewalld:
+      service: rpc-bind
+      state: enabled
+      permanent: yes
+    notify: reload firewalld
+  - firewalld:
+      service: mountd
+      state: enabled
+      permanent: yes
+    notify: reload firewalld
+  handlers:
+  - name: reload firewalld
+    systemd:
+      name: firewalld
+      state: reloaded
+
+- hosts: rpifedora
+  remote_user: root
+  tasks:
+  - name: Install packages for nfs clients
+    dnf:
+      name:
+        - nfs4-acl-tools 
+        - nfs-utils
+      state: present
