@@ -97,7 +97,7 @@
       zone: dmz
   - name: Check if cgroup is v1
     shell: grubby --info=ALL | grep "systemd.unified_cgroup_hierarchy=0"
-    ignore_errors: True
+    ignore_errors: true
     register: cgroup_check
   - name: Set cgroup to v1
     shell: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
