@@ -13,7 +13,7 @@
       enabled: yes
       state: started
   - name: Create directory for nfs
-    file: path=/mnt/nfs_shares/docs state=directory mode=777 owner=nobody group=nobody
+    file: path=/mnt/nfs_shares/fyp-database state=directory mode=777 owner=nobody group=nobody
     register: nfs_dir_creation
   - name: Restart nfs-utils
     systemd:
@@ -29,7 +29,7 @@
     register: write_exports
   - name: Export from changed /etc/exports
     shell: exportfs -arv
-    when: write_exports.changed
+    when: nfs_dir_creation.changed or write_exports.changed
   - firewalld:
       service: nfs
       state: enabled
