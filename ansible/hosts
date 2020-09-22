@@ -7,6 +7,14 @@ rpi3-alpha
 rpi4-alpha
 rpi4-delta
 
+[k8scontrolplane]
+rpi4-alpha
+
+[k8sworkers]
+rpi3-alpha
+rpi4-alpha
+rpi4-delta
+
 [dbserver]
 rpi4-delta
 

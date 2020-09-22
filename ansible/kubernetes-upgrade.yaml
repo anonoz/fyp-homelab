@@ -1,0 +1,15 @@
+---
+- hosts: rpifedora
+  remote_user: root
+  vars:
+    k8s_version: 1.19.2
+  tasks:
+  - name: "Upgrade kubeadm to {{ k8s_version }}"
+    dnf:
+      name:
+        - kubeadm-{{ k8s_version }}-0
+        - kubelet-{{ k8s_version }}-0
+        - kubectl-{{ k8s_version }}-0
+      disable_excludes: kubernetes
+      state: present
+    register: dnf_updates
