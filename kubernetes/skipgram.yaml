@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fyp-skipgram-classifier
+  labels:
+    app: fyp-skipgram-classifier
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fyp-skipgram-classifier
+  template:
+    metadata:
+      labels:
+        app: fyp-skipgram-classifier
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: "kubernetes.io/arch"
+                  operator: In
+                  values:
+                    - "arm64"
+      containers:
+        - name: skipgram-classifier
+          image: "anonoz/fyp-skipgram:mock"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+          - containerPort: 6001
