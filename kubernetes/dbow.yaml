@@ -33,13 +33,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fyp-dbow-classifier-service
+  name: fyp-dbow-classifier-nodeport
   labels:
     app: fyp-dbow-classifier
 spec:
+  type: NodePort
   selector:
     app: fyp-dbow-classifier
   ports:
     - name: dbow
       port: 6002
+      nodePort: 30002
+      protocol: TCP
 
