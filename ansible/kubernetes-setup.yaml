@@ -9,6 +9,14 @@
       mode: 666
     notify:
       - reload sysctl
+  - sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+    notify:
+      - reload sysctl
+    notify:
+      - reload sysctl
   - name: Copy /etc/yum.repos.d/kubernetes.repo
     template:
       src: rpifedora/files/etc/yum.repos.d/kubernetes.repo.j2
