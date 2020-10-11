@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fyp-webapp-rails-configmap
+
+---
+apiVersion: v1
+kind: Deployment
+---
+apiVersion:
+kind: Service
