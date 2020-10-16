@@ -83,12 +83,10 @@ kind: Service
 metadata:
   name: fyp-psql-nodeport
 spec:
-  type: NodePort
   selector:
     app: psql
   ports:
     - name: psql
       port: 5432        # Cluster IP http://10.109.199.234:port (docker exposed port)
-      nodePort: 30100   # (EXTERNAL-IP VirtualBox IPs) 192.168.50.11:nodePort 192.168.50.12:nodePort 192.168.50.13:nodePort
       protocol: TCP
   

@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: fyp-redis-pv
+  labels: #Labels 
+    app: redis
+    ver: fyp-redis-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.0.205
+    path: "/mnt/nfs_shares/fyp-redis-actioncable"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fyp-redis-actioncable-pvc
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      ver: fyp-redis-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fyp-redis-actioncable
+  labels:
+    app: redis
+    ver: fyp-redis-actioncable-01
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      ver: fyp-redis-actioncable-01
+  template:
+    metadata:
+      labels:
+        app: redis
+        ver: fyp-redis-actioncable-01
+      annotations:
+        sidecar.istio.io: "false"
+    spec:
+      containers:
+        - name: redis
+          image: redis:6
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /data
+              name: redisdatavol
+      volumes:
+        - name: redisdatavol
+          persistentVolumeClaim:
+            claimName: fyp-redis-actioncable-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fyp-redis-actioncable
+spec:
+  selector:
+    app: redis
+  ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+  

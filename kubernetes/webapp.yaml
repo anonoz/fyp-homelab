@@ -2,10 +2,61 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: fyp-webapp-rails-configmap
-
+data:
+  RAILS_ENV: production
+  SECRET_KEY_BASE: abc1234
+  DATABASE_URL: postgres://user:pass@fyp-psql-nodeport:5432/db
+  REDIS_URL: redis://fyp-redis-actioncable:6379/1
+  FFNN_URL: http://fyp-dbow-classifier:6002
+  RF_URL: http://fyp-dbow-classifier:6002
+  SVM_URL: http://fyp-dbow-classifier:6002
+  LSTM_URL: http://fyp-skipgram-classifier:6001
+  HANZO_URL: http://fyp-skipgram-classifier:6001
+  GRU_URL: http://fyp-skipgram-classifier:6001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fyp-webapp
+  labels:
+    app: fyp-webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fyp-webapp
+  template:
+    metadata:
+      labels:
+        app: fyp-webapp
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: "kubernetes.io/arch"
+                  operator: In
+                  values:
+                    - "arm64"
+      containers:
+        - name: webapp
+          image: "anonoz/fyp-webapp:arm64"
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: fyp-webapp-rails-configmap
+          ports:
+            - containerPort: 3000
 ---
 apiVersion: v1
-kind: Deployment
----
-apiVersion:
 kind: Service
+metadata:
+  name: fyp-webapp
+spec:
+  selector:
+    app: fyp-webapp
+  ports:
+    - name: rails
+      port: 3000
+      protocol: TCP
