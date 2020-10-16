@@ -13,6 +13,7 @@ data:
   LSTM_URL: http://fyp-skipgram-classifier:6001
   HANZO_URL: http://fyp-skipgram-classifier:6001
   GRU_URL: http://fyp-skipgram-classifier:6001
+  RAILS_SERVE_STATIC_FILES: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
