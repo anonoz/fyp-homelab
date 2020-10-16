@@ -12,14 +12,17 @@
       name: nfs-server
       enabled: yes
       state: started
-  - name: Create directory for nfs
+  - name: Create directory for fyp-database
     file: path=/mnt/nfs_shares/fyp-database state=directory mode=777 owner=nobody group=nobody
     register: nfs_dir_creation
+  - name: Create directory for fyp-redis-actioncable
+    file: path=/mnt/nfs_shares/fyp-redis-actioncable state=directory mode=777 owner=nobody group=nobody
+    register: nfs_dir2_creation
   - name: Restart nfs-utils
     systemd:
       name: nfs-utils
       state: restarted
-    when: nfs_dir_creation.changed
+    when: nfs_dir_creation.changed or nfs_dir2_creation.changed
   - name: Write /etc/exports for nfs server
     template:
       src: files/nfs/etc/exports.j2
@@ -29,7 +32,7 @@
     register: write_exports
   - name: Export from changed /etc/exports
     shell: exportfs -arv
-    when: nfs_dir_creation.changed or write_exports.changed
+    when: nfs_dir_creation.changed or nfs_dir2_creation.changed or write_exports.changed
   - firewalld:
       service: nfs
       state: enabled
