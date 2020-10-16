@@ -39,6 +39,17 @@
         - git
         - wget
       state: present
+  - name:  iptables-legacy
+    dnf:
+      name:
+        - iptables
+      state: present
+    register: iptables_dnf
+  - name: Switch to iptables-legacy from nftables
+    shell: update-alternatives --set iptables /usr/sbin/iptables-legacy
+    when: iptables_dnf.changed
+  - reboot:
+    when: iptables_dnf.changed
   handlers:
   - name: restart sshd
     service: name=sshd state=restarted

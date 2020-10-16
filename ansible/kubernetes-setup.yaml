@@ -97,6 +97,10 @@
   - firewalld:
       state: enabled
       permanent: yes
+      port: 30000-32767/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
       port: 8472/udp
   - firewalld:
       masquerade: yes
