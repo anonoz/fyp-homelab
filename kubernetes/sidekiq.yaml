@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fyp-webapp-rails-configmap
+  name: fyp-sidekiq-rails-configmap
 data:
   RAILS_ENV: production
   SECRET_KEY_BASE: abc1234
@@ -20,18 +20,18 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fyp-webapp
+  name: fyp-sidekiq
   labels:
-    app: fyp-webapp
+    app: fyp-sidekiq
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: fyp-webapp
+      app: fyp-sidekiq
   template:
     metadata:
       labels:
-        app: fyp-webapp
+        app: fyp-sidekiq
     spec:
       affinity:
         nodeAffinity:
@@ -43,23 +43,13 @@ spec:
                   values:
                     - "arm64"
       containers:
-        - name: webapp
-          image: "anonoz/fyp-webapp-arm64:8729331b653fb0577602afa8b2550544ca7ad9cd"
+        - name: sidekiq
+          image: anonoz/fyp-webapp-arm64:8729331b653fb0577602afa8b2550544ca7ad9cd
           imagePullPolicy: "IfNotPresent"
+          command:
+            - bundle
+            - exec
+            - sidekiq
           envFrom:
             - configMapRef:
-                name: fyp-webapp-rails-configmap
-          ports:
-            - containerPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fyp-webapp
-spec:
-  selector:
-    app: fyp-webapp
-  ports:
-    - name: rails
-      port: 3000
-      protocol: TCP
+                name: fyp-sidekiq-rails-configmap
