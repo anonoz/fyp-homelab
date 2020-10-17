@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fyp-webapp-migration
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: "kubernetes.io/arch"
+                  operator: In
+                  values:
+                    - "arm64"
+      containers:
+      - name: fyp-webapp-migration
+        image: "anonoz/fyp-webapp-arm64:8729331b653fb0577602afa8b2550544ca7ad9cd"
+        command: ["bundle", "exec", "rails", "db:migrate"]
+        envFrom:
+          - configMapRef:
+              name: fyp-webapp-rails-configmap
+      restartPolicy: Never
+  backoffLimit: 4
