@@ -4,7 +4,8 @@ metadata:
   name: fyp-ingress
 spec:
   rules:
-  - http:
+  - host: fyp.anonoz.com
+    http:
       paths:
       - path: /
         pathType: Prefix
@@ -13,3 +14,7 @@ spec:
             name: fyp-webapp
             port:
               number: 3000
+  tls:
+  - hosts:
+    - fyp.anonoz.com
+    secretName: fyp-cloudflare-tls
