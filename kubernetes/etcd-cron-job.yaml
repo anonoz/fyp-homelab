@@ -9,7 +9,7 @@ data:
   ETCD_CACERT_PATH: /etc/kubernetes/pki/etcd/ca.crt
   ETCD_KEY_PATH: /etc/kubernetes/pki/apiserver-etcd-client.key
   ETCD_CERT_PATH: /etc/kubernetes/pki/apiserver-etcd-client.crt
-  SNAPSHOT_PATH: /tmp/etcd-snapshots/
+  SNAPSHOT_PATH: /tmp/etcd-snapshots
 ---
 apiVersion: batch/v1beta1
 kind: CronJob
@@ -17,7 +17,7 @@ metadata:
   name: etcd-backup-cronjob
   namespace: kube-system
 spec: # CronJobSpec
-  schedule: "*/1 * * * *"
+  schedule: "*/30 * * * *"
   concurrencyPolicy: Replace
   jobTemplate: #JobTemplateSpec
     spec: # JobSpec
@@ -39,21 +39,11 @@ spec: # CronJobSpec
           containers:
             - name: etcdctl
               image: anonoz/etcdctl-arm64:3.4.13
-              # command:
-              #   - "etcdctl"
-              # args:
-              #   - "--endpoints=$(ETCD_ENDPOINT)"
-              #   - "--key=$(ETCD_KEY_PATH)"
-              #   - "--cert=$(ETCD_CERT_PATH)"
-              #   - "--cacert=$(ETCD_CACERT_PATH)"
-              #   - "snapshot"
-              #   - "save"
-              #   - "/tmp/etcd-snapshots/snapshotdb-$(date -u +%Y%m%d-%H%M)"
               command:
                 - /bin/sh
               args:
                 - -c
-                - etcdctl --endpoints=${ETCD_ENDPOINT} --key=${ETCD_KEY_PATH} --cert=${ETCD_CERT_PATH} --cacert=${ETCD_CACERT_PATH} snapshot save /tmp/etcd-snapshots/snapshotdb-$(date -u +%Y%m%d-%H%M)
+                - cd ${SNAPSHOT_PATH}; ls -t | grep ^snapshotdb | tail -n +11 | xargs rm; etcdctl --endpoints=${ETCD_ENDPOINT} --key=${ETCD_KEY_PATH} --cert=${ETCD_CERT_PATH} --cacert=${ETCD_CACERT_PATH} snapshot save ${SNAPSHOT_PATH}/snapshotdb-$(date -u +%Y%m%d-%H%M)
               envFrom:
                 - configMapRef:
                     name: etcd-backup-cronjob
