@@ -39,16 +39,21 @@ spec: # CronJobSpec
           containers:
             - name: etcdctl
               image: anonoz/etcdctl-arm64:3.4.13
+              # command:
+              #   - "etcdctl"
+              # args:
+              #   - "--endpoints=$(ETCD_ENDPOINT)"
+              #   - "--key=$(ETCD_KEY_PATH)"
+              #   - "--cert=$(ETCD_CERT_PATH)"
+              #   - "--cacert=$(ETCD_CACERT_PATH)"
+              #   - "snapshot"
+              #   - "save"
+              #   - "/tmp/etcd-snapshots/snapshotdb-$(date -u +%Y%m%d-%H%M)"
               command:
-                - "etcdctl"
+                - /bin/sh
               args:
-                - "--endpoints=$(ETCD_ENDPOINT)"
-                - "--key=$(ETCD_KEY_PATH)"
-                - "--cert=$(ETCD_CERT_PATH)"
-                - "--cacert=$(ETCD_CACERT_PATH)"
-                - "snapshot"
-                - "save"
-                - "/tmp/etcd-snapshots/snapshotdb"
+                - -c
+                - etcdctl --endpoints=${ETCD_ENDPOINT} --key=${ETCD_KEY_PATH} --cert=${ETCD_CERT_PATH} --cacert=${ETCD_CACERT_PATH} snapshot save /tmp/etcd-snapshots/snapshotdb-$(date -u +%Y%m%d-%H%M)
               envFrom:
                 - configMapRef:
                     name: etcd-backup-cronjob
