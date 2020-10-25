@@ -1,4 +1,4 @@
-# ANONOZ HOMELAB
+# fyp-homelab
 
 ## What am I doing here?
 
