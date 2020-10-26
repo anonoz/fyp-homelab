@@ -48,7 +48,7 @@ metadata:
   name: etcd-backup-cronjob
   namespace: kube-system
 spec: # CronJobSpec
-  schedule: "*/1 * * * *"
+  schedule: "*/30 * * * *"
   concurrencyPolicy: Replace
   jobTemplate: #JobTemplateSpec
     spec: # JobSpec
