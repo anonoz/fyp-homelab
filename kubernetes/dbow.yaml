@@ -9,8 +9,12 @@ spec:
   selector:
     matchLabels:
       app: fyp-dbow-classifier
+  progressDeadlineSeconds: 300
   strategy:
-
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: "50%"
+      maxUnavailable: "20%"
   template:
     metadata:
       labels:
@@ -38,7 +42,7 @@ spec:
               port: 6002
             successThreshold: 2
             failureThreshold: 3
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
