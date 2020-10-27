@@ -5,7 +5,7 @@ metadata:
   labels:
     app: fyp-skipgram-classifier
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: fyp-skipgram-classifier
@@ -35,6 +35,11 @@ spec:
               port: 6001
             initialDelaySeconds: 10
             periodSeconds: 5
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service

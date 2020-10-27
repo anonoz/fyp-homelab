@@ -5,10 +5,12 @@ metadata:
   labels:
     app: fyp-dbow-classifier
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: fyp-dbow-classifier
+  strategy:
+
   template:
     metadata:
       labels:
@@ -26,15 +28,31 @@ spec:
       containers:
         - name: dbow-classifier
           image: "anonoz/fyp-dbow:mock"
+          # image: "anonoz/http-test-arm64:500"
           imagePullPolicy: "IfNotPresent"
           ports:
           - containerPort: 6002
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6002
+            successThreshold: 2
+            failureThreshold: 3
+            initialDelaySeconds: 20
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
               port: 6002
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            failureThreshold: 3
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+
 ---
 apiVersion: v1
 kind: Service

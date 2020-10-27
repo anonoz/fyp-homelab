@@ -24,7 +24,7 @@ metadata:
   labels:
     app: fyp-sidekiq
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: fyp-sidekiq
@@ -53,3 +53,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: fyp-sidekiq-rails-configmap
+          resources:
+            limits:
+              memory: "500Mi"
+            requests:
+              memory: "200Mi"
