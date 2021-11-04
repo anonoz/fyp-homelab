@@ -5,6 +5,8 @@
   - name: Set hostnames
     hostname:
       name: "{{ inventory_hostname }}"
+  - name: Set time zone
+    shell: timedatectl set-timezone Asia/Kuala_Lumpur
   - name: Add user 'anonoz'
     user:
       name: anonoz

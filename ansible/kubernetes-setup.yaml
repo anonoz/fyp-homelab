@@ -15,8 +15,6 @@
       sysctl_set: yes
     notify:
       - reload sysctl
-    notify:
-      - reload sysctl
   - name: Copy /etc/yum.repos.d/kubernetes.repo
     template:
       src: rpifedora/files/etc/yum.repos.d/kubernetes.repo.j2
@@ -98,6 +96,10 @@
       state: enabled
       permanent: yes
       port: 30000-32767/tcp
+  - firewalld:
+      state: enabled
+      permanent: yes
+      port: 8285/udp
   - firewalld:
       state: enabled
       permanent: yes

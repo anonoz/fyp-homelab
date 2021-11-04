@@ -1,10 +1,10 @@
-rpi3-alpha ansible_host=192.168.0.203
+# rpi3-alpha ansible_host=192.168.0.203
 rpi4-alpha ansible_host=192.168.0.204
 rpi4-delta ansible_host=192.168.0.205
 rpi4-sigma ansible_host=192.168.0.206
 
 [rpifedora]
-rpi3-alpha
+# rpi3-alpha
 rpi4-alpha
 rpi4-delta
 rpi4-sigma
@@ -13,7 +13,7 @@ rpi4-sigma
 rpi4-alpha
 
 [k8sworkers]
-rpi3-alpha
+# rpi3-alpha
 rpi4-alpha
 rpi4-delta
 rpi4-sigma
@@ -22,4 +22,4 @@ rpi4-sigma
 rpi4-delta
 
 [httpserver]
-rpi3-alpha
+# rpi3-alpha
